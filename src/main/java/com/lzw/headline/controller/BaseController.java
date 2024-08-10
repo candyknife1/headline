@@ -1,11 +1,5 @@
 package com.lzw.headline.controller;
 
-/**
- * @Author: lzw
- * @Description: TODO
- * @Date: 2024/8/7 17:04
- * @Version: 1.0
- */
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;

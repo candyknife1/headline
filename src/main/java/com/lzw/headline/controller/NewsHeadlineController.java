@@ -1,6 +1,6 @@
 package com.lzw.headline.controller;
 
-import javax.servlet.annotation.WebServlet;
+import jakarta.servlet.annotation.WebServlet;
 
 /**
  * @Author: lzw
