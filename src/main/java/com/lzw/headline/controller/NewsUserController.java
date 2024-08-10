@@ -89,5 +89,17 @@ public class NewsUserController extends BaseController{
         }
         WebUtil.writeJson(resp, result);
     }
+
+    protected void checkLogin(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        String token = req.getHeader("token");
+        Result result=Result.build(null, ResultCodeEnum.NOTLOGIN);
+        if(null!=token &&(!"".equals(token))){
+            if(!JwtHelper.isExpiration(token)){
+                result=Result.ok(null);
+            }
+        }
+        WebUtil.writeJson(resp, result);
+
+    }
 }
 

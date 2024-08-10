@@ -3,6 +3,7 @@ package com.lzw.headline.dao.impl;
 import com.lzw.headline.dao.BaseDao;
 import com.lzw.headline.dao.NewsHeadlineDao;
 import com.lzw.headline.dao.NewsUserDao;
+import com.lzw.headline.pojo.NewsHeadline;
 import com.lzw.headline.pojo.vo.HeadlineDetailVo;
 import com.lzw.headline.pojo.vo.HeadlinePageVo;
 import com.lzw.headline.pojo.vo.HeadlineQueryVo;
@@ -86,7 +87,7 @@ public class NewsHeadlineDaoImpl extends BaseDao implements NewsHeadlineDao {
                     h.title,
                     h.article,
                     h.type,
-                    t.tname as typeName
+                    t.tname as typeName,
                     h.page_views as pageViews,                  
                     TIMESTAMPDIFF(HOUR,h.create_time,now()) as pastHours,
                     h.publisher,
@@ -96,11 +97,70 @@ public class NewsHeadlineDaoImpl extends BaseDao implements NewsHeadlineDao {
                 left join
                     news_type t on h.type = t.tid
                 left join
-                    news_user u on h.publish = u.uid
+                    news_user u on h.publisher = u.uid
                 where     
                     h.hid = ?                              
                 """;
         List<HeadlineDetailVo> list = baseQuery(HeadlineDetailVo.class, sql, hid);
         return null != list && list.size()>0? list.get(0) : null;
+    }
+
+    @Override
+    public int addNewsHeadline(NewsHeadline newsHeadline) {
+        String sql = """
+                INSERT INTO news_headline
+                 values (DEFAULT,?,?,?,?,0,now(),now(),0)
+                """;
+        return baseUpdate(sql, newsHeadline.getTitle(), newsHeadline.getArticle(), newsHeadline.getType(), newsHeadline.getPublisher());
+    }
+
+    @Override
+    public NewsHeadline findByHId(Integer hid) {
+        String sql = """
+                select
+                    hid,
+                    title,
+                    article,
+                    type,
+                    publisher,
+                    page_views pageViews,
+                    create_time createTime,
+                    update_time updateTime,
+                    is_deleted isDeleted
+                from
+                    news_headline
+                 where
+                    hid =?
+                """;
+        List<NewsHeadline> list=baseQuery(NewsHeadline.class,sql,hid);
+        return list!=null && list.size()>0? list.get(0) : null;
+    }
+
+    @Override
+    public int update(NewsHeadline headline) {
+       String sql = """
+               update news_headline
+                set
+                    title =?,
+                    article =?,
+                    type =?,
+                    update_time=now()
+                where
+                    hid =?
+               """;
+       return baseUpdate(sql, headline.getTitle(), headline.getArticle(), headline.getType(), headline.getHid());
+    }
+
+    @Override
+    public int removeByHid(int hid) {
+        String sql = """
+                update news_headline
+                 set
+                    is_deleted=1,
+                    update_time=now()
+                where
+                    hid =?
+                """;
+        return baseUpdate(sql, hid);
     }
 }
